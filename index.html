@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Renungan Kristen - Perkenalan</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- VIDEO BACKGROUND GLOBAL -->
+  <video autoplay muted loop id="global-bg-video">
+    <source src="assets/bg.mp4" type="video/mp4">
+  </video>
+  <div id="global-bg-overlay"></div>
+  
+  <!-- Hero Section (elemen lama tetap ada) -->
+  <div class="hero-section">
+    <div class="hero-overlay"></div>
+    <!-- Video hero khusus index.html -->
+    <video autoplay muted loop id="index-bg-video">
+      <source src="assets/bg.mp4" type="video/mp4">
+    </video>
+    <div class="hero-content">
+      <img src="assets/logo.png" alt="Logo Renungan Kristen" class="hero-logo">
+      <h1 class="hero-title">Selamat Datang di Renungan Kristen</h1>
+      <p class="hero-subtitle">Renungan Harian, Mode Gelap/Terang, & Fitur Menarik Lainnya</p>
+      <div class="hero-buttons">
+        <a href="login.html" class="btn hero-btn">Login</a>
+        <a href="register.html" class="btn hero-btn">Daftar</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bagian Fitur (opsional) -->
+  <div class="intro-section">
+    <h2>Fitur Unggulan</h2>
+    <div class="feature-list">
+      <div class="feature-card">
+        <h3>Renungan Harian</h3>
+        <p>Temukan firman dan pesan yang menguatkan setiap hari.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Mode Gelap/Terang</h3>
+        <p>Atur tampilan sesuai kenyamanan mata Anda.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Login Sosial</h3>
+        <p>Masuk cepat dengan Google atau Facebook.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Jika pengguna sudah login, redirect ke home.html
+    if(localStorage.getItem('loggedIn') === 'true'){
+      window.location.href = "home.html";
+    }
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>

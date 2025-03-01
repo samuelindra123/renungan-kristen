@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <!-- Agar tampilan responsif di semua perangkat -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Renungan Kristen</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase Modular: Import dan Konfigurasi (versi 11.4.0) -->
+  <script type="module">
+    // Import modul-modul Firebase yang diperlukan
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+    // Konfigurasi Firebase – ganti dengan data proyek Anda
+    const firebaseConfig = {
+      apiKey: "AIzaSyDCoYSIF8Bsh3Xrn4BRdzQ5KsMZZJm0FeI",
+      authDomain: "renungan-kristen-82183.firebaseapp.com",
+      projectId: "renungan-kristen-82183",
+      storageBucket: "renungan-kristen-82183.firebasestorage.app",
+      messagingSenderId: "939599948432",
+      appId: "1:939599948432:web:558538edd470bd4c798615",
+      measurementId: "G-E36N2R2XXH"
+    };
+
+    // Inisialisasi Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+
+    // Fungsi login dengan Google (modular)
+    window.loginWithGoogle = function() {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const user = result.user;
+          const currentUser = {
+            name: user.displayName,
+            email: user.email,
+            profilePic: user.photoURL
+          };
+          // Simpan status login dan data user ke localStorage
+          localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          window.location.href = 'home.html';
+        })
+        .catch((error) => {
+          console.error(error);
+          alert("Login dengan Google gagal: " + error.message);
+        });
+    };
+
+    // Fungsi login dengan Facebook (modular)
+    window.loginWithFacebook = function() {
+      const provider = new FacebookAuthProvider();
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const user = result.user;
+          const currentUser = {
+            name: user.displayName,
+            email: user.email,
+            profilePic: user.photoURL
+          };
+          localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          window.location.href = 'home.html';
+        })
+        .catch((error) => {
+          console.error(error);
+          alert("Login dengan Facebook gagal: " + error.message);
+        });
+    };
+  </script>
+</head>
+<body>
+  <!-- Global Background Video dan Overlay (elemen lama tidak diubah) -->
+  <video autoplay muted loop id="global-bg-video">
+    <source src="assets/bg.mp4" type="video/mp4">
+  </video>
+  <div id="global-bg-overlay"></div>
+
+  <!-- Halaman Login dengan Struktur Lama -->
+  <div class="auth-page login-page">
+    <div class="auth-container">
+      <img src="assets/logo.png" alt="Logo" class="auth-logo">
+      <h2>Login</h2>
+      <form id="loginForm" class="auth-form">
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+
+        <label for="password">Password:</label>
+        <div class="password-field">
+          <input type="password" id="password" required>
+          <!-- Fungsi toggle password diambil dari script.js -->
+          <img src="assets/eye-open.png" alt="Toggle Password" class="toggle-password" onclick="togglePassword()">
+        </div>
+        <button type="submit" class="btn auth-btn">Login</button>
+      </form>
+
+      <!-- Tombol Login Sosial dengan Ikon dari URL Eksternal -->
+      <div class="social-login">
+        <button class="btn google" onclick="loginWithGoogle()">
+          <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google" class="social-icon">
+          Login dengan Google
+        </button>
+        <button class="btn facebook" onclick="loginWithFacebook()">
+          <img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook" class="social-icon">
+          Login dengan Facebook
+        </button>
+      </div>
+      <a href="forgot.html" class="forgot-link">Lupa Password?</a>
+      <p>Belum punya akun? <a href="register.html">Daftar Sekarang</a></p>
+    </div>
+  </div>
+
+  <!-- Panggil file JavaScript lama untuk fungsi lain (seperti togglePassword, form handling, dsb.) -->
+  <script src="script.js"></script>
+</body>
+</html>

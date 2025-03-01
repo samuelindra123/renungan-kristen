@@ -1,0 +1,472 @@
+/* ------------------------------------------------------
+   RESET & GLOBAL
+------------------------------------------------------- */
+* {
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box;
+}
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f5f5;
+  color: #333;
+  transition: background 0.5s, color 0.5s;
+  position: relative;
+  min-height: 100vh;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 5px;
+  transition: background 0.3s;
+}
+.btn:hover {
+  background: #0056b3;
+}
+/* Dark mode */
+.dark-mode {
+  background: #121212;
+  color: #f5f5f5;
+}
+/* ------------------------------------------------------
+   VIDEO BACKGROUND GLOBAL
+------------------------------------------------------- */
+#global-bg-video {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+#global-bg-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: -1;
+}
+/* ------------------------------------------------------
+   HERO SECTION (index.html)
+------------------------------------------------------- */
+.hero-section {
+  position: relative;
+  width: 100%;
+  height: 100vh; 
+  overflow: hidden;
+}
+#index-bg-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+.hero-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 1;
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #fff;
+  padding: 0 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.hero-logo {
+  width: 120px;
+  margin-bottom: 20px;
+}
+.hero-title {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+.hero-subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+.hero-buttons .hero-btn {
+  background: #ffb703;
+  color: #111;
+}
+.hero-buttons .hero-btn:hover {
+  background: #ffa403;
+}
+/* ------------------------------------------------------
+   INTRO SECTION
+------------------------------------------------------- */
+.intro-section {
+  padding: 50px 20px;
+  text-align: center;
+  background: #f5f5f5;
+}
+.intro-section h2 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+}
+.feature-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+.feature-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 300px;
+  padding: 20px;
+  text-align: left;
+}
+.feature-card h3 {
+  margin-top: 0;
+  color: #007BFF;
+}
+/* ------------------------------------------------------
+   AUTH PAGES (login, register, forgot)
+------------------------------------------------------- */
+.auth-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.auth-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 1;
+}
+.auth-container {
+  position: relative;
+  z-index: 2;
+  width: 350px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.auth-logo {
+  width: 80px;
+  margin-bottom: 20px;
+}
+.auth-form {
+  text-align: left;
+  margin-bottom: 20px;
+}
+.auth-form label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+.auth-form input,
+.auth-form textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.password-field {
+  position: relative;
+}
+.password-field input {
+  padding-right: 40px;
+}
+.toggle-password {
+  position: absolute;
+  right: 10px; 
+  top: 50%; 
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+.auth-btn {
+  width: 100%;
+  margin-top: 20px;
+}
+.forgot-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: #007BFF;
+}
+.social-login button {
+  width: 100%;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.social-icon {
+  width: 20px;
+  margin-right: 8px;
+}
+/* ------------------------------------------------------
+   SIDEBAR & MAIN CONTENT (setelah login)
+------------------------------------------------------- */
+.sidebar {
+  position: fixed;
+  top: 0; left: -250px;
+  width: 250px; height: 100%;
+  background: #007BFF;
+  color: #fff;
+  padding: 20px;
+  transition: left 0.3s;
+  z-index: 1000;
+}
+.sidebar.active {
+  left: 0;
+}
+.sidebar-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.profile-pic {
+  width: 80px; 
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+}
+.sidebar-nav ul li {
+  margin: 15px 0;
+}
+.sidebar-nav ul li a {
+  color: #fff;
+}
+.sidebar-logout {
+  margin-top: 20px;
+  background: #dc3545;
+}
+.sidebar-logout:hover {
+  background: #b52b36;
+}
+/* Main content layout */
+.main-content {
+  margin-left: 0;
+  transition: margin-left 0.3s;
+  padding: 20px;
+  text-align: center;
+}
+.main-content.active {
+  margin-left: 250px;
+}
+.hamburger {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+}
+.logo-header {
+  width: 50px;
+  margin-left: 20px;
+  vertical-align: middle;
+}
+.content {
+  margin-top: 20px;
+}
+/* ------------------------------------------------------
+   ACCOUNT PAGE
+------------------------------------------------------- */
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+.profile-pic-container img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.profile-info {
+  text-align: center;
+  font-size: 16px;
+}
+.profile-info p {
+  margin: 6px 0;
+}
+/* ------------------------------------------------------
+   SETTINGS PAGE
+------------------------------------------------------- */
+.settings-option {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.settings-option h2 {
+  margin-top: 0;
+}
+.settings-option form label {
+  font-weight: bold;
+  margin-top: 10px;
+  display: block;
+  text-align: left;
+}
+/* ------------------------------------------------------
+   DEVOTION PAGE
+------------------------------------------------------- */
+.devotion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+  text-align: left;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.devotion-item {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.upload-renungan {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  max-width: 600px;
+  margin: 20px auto;
+  text-align: left;
+}
+.upload-renungan h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.upload-renungan form label {
+  font-weight: bold;
+  margin-top: 10px;
+  display: block;
+}
+.upload-renungan form input,
+.upload-renungan form textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+/* ------------------------------------------------------
+   ABOUT PAGE
+------------------------------------------------------- */
+.about-page {
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+.about-hero {
+  position: relative;
+  width: 100%;
+  height: 40vh;
+  background: url("assets/bg-christian/afternoon1.jpg") no-repeat center center/cover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.about-hero-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 1;
+}
+.about-hero-logo {
+  position: relative;
+  z-index: 2;
+  width: 100px;
+  margin-bottom: 10px;
+}
+.about-hero-title {
+  position: relative;
+  z-index: 2;
+  font-size: 2rem;
+  margin-bottom: 5px;
+}
+.about-hero-subtitle {
+  position: relative;
+  z-index: 2;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+.about-content {
+  padding: 30px;
+  text-align: center;
+}
+.about-section {
+  margin-bottom: 20px;
+}
+.about-section h2 {
+  color: #007BFF;
+  margin-bottom: 10px;
+}
+.about-buttons {
+  margin-top: 20px;
+}
+/* ------------------------------------------------------
+   RESPONSIVE
+------------------------------------------------------- */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  .hero-buttons .hero-btn {
+    display: block;
+    margin: 10px auto;
+  }
+  .feature-card {
+    width: 90%;
+  }
+  .auth-container {
+    width: 90%;
+    margin: 0 20px;
+  }
+  .sidebar.active {
+    width: 200px;
+  }
+  .main-content.active {
+    margin-left: 200px;
+  }
+  .logo-header {
+    width: 40px;
+  }
+  .about-hero {
+    height: 30vh;
+  }
+  .about-hero-title {
+    font-size: 1.5rem;
+  }
+}

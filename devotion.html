@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Renungan - Renungan Kristen</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- VIDEO BACKGROUND GLOBAL -->
+  <video autoplay muted loop id="global-bg-video">
+    <source src="assets/bg.mp4" type="video/mp4">
+  </video>
+  <div id="global-bg-overlay"></div>
+
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <img id="profilePic" src="assets/default-avatar.png" alt="Foto Profil" class="profile-pic">
+      <h3 id="userName">Nama Pengguna</h3>
+      <p id="userEmail">email@example.com</p>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="home.html">Home</a></li>
+        <li><a href="account.html">Akun</a></li>
+        <li><a href="settings.html">Pengaturan</a></li>
+        <li><a href="devotion.html">Renungan</a></li>
+      </ul>
+    </nav>
+    <button id="logoutBtn" class="btn sidebar-logout">Logout</button>
+  </div>
+  
+  <div class="main-content">
+    <header>
+      <button id="hamburger" class="hamburger">&#9776;</button>
+      <img src="assets/logo.png" alt="Logo" class="logo-header">
+    </header>
+    <section class="content">
+      <h1>Renungan Harian</h1>
+      
+      <!-- Form untuk Upload Renungan (manual) -->
+      <div class="upload-renungan">
+        <h2>Upload Renungan Baru</h2>
+        <form id="uploadDevotionForm">
+          <label for="devotionTitle">Judul:</label>
+          <input type="text" id="devotionTitle" required>
+          
+          <label for="devotionDate">Tanggal:</label>
+          <input type="date" id="devotionDate" required>
+          
+          <label for="devotionContent">Isi Renungan:</label>
+          <textarea id="devotionContent" rows="4" required></textarea>
+          
+          <label for="devotionImage">Unggah Gambar (opsional):</label>
+          <input type="file" id="devotionImage" accept="image/*">
+          
+          <button type="submit" class="btn">Upload Renungan</button>
+        </form>
+      </div>
+      
+      <!-- Daftar Renungan -->
+      <div id="devotionList" class="devotion-list">
+        <!-- Renungan akan dimuat secara dinamis -->
+      </div>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

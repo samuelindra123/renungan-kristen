@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengaturan - Renungan Kristen</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- VIDEO BACKGROUND GLOBAL -->
+  <video autoplay muted loop id="global-bg-video">
+    <source src="assets/bg.mp4" type="video/mp4">
+  </video>
+  <div id="global-bg-overlay"></div>
+
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <img id="profilePic" src="assets/default-avatar.png" alt="Foto Profil" class="profile-pic">
+      <h3 id="userName">Nama Pengguna</h3>
+      <p id="userEmail">email@example.com</p>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="home.html">Home</a></li>
+        <li><a href="account.html">Akun</a></li>
+        <li><a href="settings.html">Pengaturan</a></li>
+        <li><a href="devotion.html">Renungan</a></li>
+      </ul>
+    </nav>
+    <button id="logoutBtn" class="btn sidebar-logout">Logout</button>
+  </div>
+  
+  <div class="main-content">
+    <header>
+      <button id="hamburger" class="hamburger">&#9776;</button>
+      <img src="assets/logo.png" alt="Logo" class="logo-header">
+    </header>
+    <section class="content">
+      <h1>Pengaturan</h1>
+      <div class="settings-option">
+        <label for="modeToggle">Mode Gelap/Terang:</label>
+        <input type="checkbox" id="modeToggle" onchange="toggleMode()">
+      </div>
+      <div class="settings-option">
+        <h2>Ganti Password</h2>
+        <form id="changePasswordForm">
+          <label for="currentPassword">Password Saat Ini:</label>
+          <input type="password" id="currentPassword" required>
+          
+          <label for="newPassword">Password Baru:</label>
+          <input type="password" id="newPassword" required>
+          
+          <button type="submit" class="btn">Ganti Password</button>
+        </form>
+      </div>
+      <div class="settings-option">
+        <h2>Edit Data Akun</h2>
+        <form id="editAccountForm">
+          <label for="editName">Nama Lengkap:</label>
+          <input type="text" id="editName" required>
+          
+          <label for="editBirthplace">Tempat Lahir:</label>
+          <input type="text" id="editBirthplace" required>
+          
+          <label for="editBirthdate">Tanggal Lahir:</label>
+          <input type="date" id="editBirthdate" required>
+          
+          <button type="submit" class="btn">Simpan Perubahan</button>
+        </form>
+      </div>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

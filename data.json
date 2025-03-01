@@ -1,0 +1,25 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "password": "password123",
+      "birthPlace": "Jakarta",
+      "birthDate": "1990-01-01",
+      "profilePic": "assets/default-avatar.png"
+    }
+  ],
+  "devotions": [
+    {
+      "date": "2023-03-01",
+      "title": "Renungan Harian 1",
+      "content": "Hari ini mari kita merenungkan kasih Tuhan yang abadi."
+    },
+    {
+      "date": "2023-03-02",
+      "title": "Renungan Harian 2",
+      "content": "Dalam setiap tantangan, Tuhan selalu menyertai kita."
+    }
+  ]
+}
