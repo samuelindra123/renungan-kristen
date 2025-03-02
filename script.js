@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Sidebar toggle
+  // Sidebar toggle (jika digunakan pada dashboard)
   const hamburger = document.getElementById('hamburger');
   const sidebar = document.getElementById('sidebar');
   if (hamburger) {
@@ -22,14 +22,29 @@ document.addEventListener('DOMContentLoaded', function() {
   // Muat data pengguna (jika ada)
   loadUserData();
   
-  // Buat angka verifikasi random di halaman register
+  // Buat captcha sederhana di halaman register (jika elemen tersedia)
   if (document.getElementById('randomNumber')) {
     const randomNumber = Math.floor(Math.random() * 9000) + 1000; // 4 digit
     document.getElementById('randomNumber').textContent = randomNumber;
     localStorage.setItem('verificationNumber', randomNumber);
   }
   
-  // Form Login (Email & Password)
+  // Toggle password (untuk form login & register)
+  const toggleIcons = document.querySelectorAll('.toggle-password');
+  toggleIcons.forEach(icon => {
+    icon.addEventListener('click', togglePassword);
+  });
+
+  // Dark mode toggle (jika ada switch dengan id modeToggle)
+  const modeToggle = document.getElementById('modeToggle');
+  if (modeToggle) {
+    if (localStorage.getItem('mode') === 'dark') {
+      document.body.classList.add('dark-mode');
+      modeToggle.checked = true;
+    }
+  }
+
+  // -- Simulasi form login lokal (jika diperlukan) --
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
     loginForm.addEventListener('submit', function(e) {
@@ -48,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Form Registrasi
+  // -- Simulasi form registrasi lokal (jika diperlukan) --
   const registerForm = document.getElementById('registerForm');
   if (registerForm) {
     registerForm.addEventListener('submit', function(e) {
@@ -88,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Form Lupa Password
+  // -- Form lupa password --
   const forgotForm = document.getElementById('forgotForm');
   if (forgotForm) {
     forgotForm.addEventListener('submit', function(e) {
@@ -104,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Form Ganti Password
+  // -- Form ganti password --
   const changePasswordForm = document.getElementById('changePasswordForm');
   if (changePasswordForm) {
     changePasswordForm.addEventListener('submit', function(e) {
@@ -130,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Form Edit Data Akun
+  // -- Form edit data akun --
   const editAccountForm = document.getElementById('editAccountForm');
   if (editAccountForm) {
     editAccountForm.addEventListener('submit', function(e) {
@@ -153,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Upload Foto Profil
+  // -- Upload foto profil --
   const uploadProfilePic = document.getElementById('uploadProfilePic');
   if (uploadProfilePic) {
     uploadProfilePic.addEventListener('change', function() {
@@ -175,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Muat Renungan Harian (devotion.html)
+  // -- Muat Renungan Harian (devotion.html) --
   if (document.getElementById('devotionList')) {
     let devotions = JSON.parse(localStorage.getItem('devotions'));
     if (!devotions) {
@@ -196,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadDevotions();
   }
   
-  // Form Upload Renungan
+  // -- Form upload renungan --
   const uploadDevotionForm = document.getElementById('uploadDevotionForm');
   if (uploadDevotionForm) {
     uploadDevotionForm.addEventListener('submit', function(e) {
@@ -220,13 +235,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Mode Gelap/Terang
-  const modeToggle = document.getElementById('modeToggle');
-  if (modeToggle) {
-    if (localStorage.getItem('mode') === 'dark') {
-      document.body.classList.add('dark-mode');
-      modeToggle.checked = true;
-    }
+  // -- Mode Gelap/Terang --
+  const modeToggleSwitch = document.getElementById('modeToggle');
+  if (modeToggleSwitch) {
+    modeToggleSwitch.addEventListener('change', toggleMode);
   }
 });
 
@@ -267,12 +279,14 @@ function loadDevotions() {
 function togglePassword() {
   const passwordField = document.getElementById('password');
   const toggleIcon = document.querySelector('.toggle-password');
-  if (passwordField.type === 'password') {
-    passwordField.type = 'text';
-    toggleIcon.src = 'assets/eye-close.png';
-  } else {
-    passwordField.type = 'password';
-    toggleIcon.src = 'assets/eye-open.png';
+  if (passwordField) {
+    if (passwordField.type === 'password') {
+      passwordField.type = 'text';
+      toggleIcon.src = 'assets/eye-close.png';
+    } else {
+      passwordField.type = 'password';
+      toggleIcon.src = 'assets/eye-open.png';
+    }
   }
 }
 
@@ -308,6 +322,7 @@ function loadUserData() {
     if (document.getElementById('accountBirthdate')) {
       document.getElementById('accountBirthdate').textContent = currentUser.birthDate || "";
     }
+    // Isi form edit (jika ada)
     if (document.getElementById('editName')) {
       document.getElementById('editName').value = currentUser.name;
     }
@@ -319,41 +334,3 @@ function loadUserData() {
     }
   }
 }
-
-/* Kode firebase-compat sebagai fallback (non modular), sudah dikomentari karena kita menggunakan modul di HTML
-function loginWithGoogle() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider)
-    .then((result) => {
-      const user = {
-         name: result.user.displayName,
-         email: result.user.email,
-         profilePic: result.user.photoURL,
-      };
-      localStorage.setItem('loggedIn', 'true');
-      localStorage.setItem('currentUser', JSON.stringify(user));
-      window.location.href = 'home.html';
-    }).catch((error) => {
-      console.error(error);
-      alert("Login dengan Google gagal!");
-    });
-}
-
-function loginWithFacebook() {
-  const provider = new firebase.auth.FacebookAuthProvider();
-  firebase.auth().signInWithPopup(provider)
-    .then((result) => {
-      const user = {
-         name: result.user.displayName,
-         email: result.user.email,
-         profilePic: result.user.photoURL,
-      };
-      localStorage.setItem('loggedIn', 'true');
-      localStorage.setItem('currentUser', JSON.stringify(user));
-      window.location.href = 'home.html';
-    }).catch((error) => {
-      console.error(error);
-      alert("Login dengan Facebook gagal!");
-    });
-}
-*/

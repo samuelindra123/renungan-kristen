@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verifikasi OTP Nomor Telepon - Daftar</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Firebase & Modul -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyDCoYSIF8Bsh3Xrn4BRdzQ5KsMZZJm0FeI",
+      authDomain: "renungan-kristen-82183.firebaseapp.com",
+      projectId: "renungan-kristen-82183",
+      storageBucket: "renungan-kristen-82183.firebasestorage.app",
+      messagingSenderId: "939599948432",
+      appId: "1:939599948432:web:558538edd470bd4c798615",
+      measurementId: "G-E36N2R2XXH"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    
+    // Inisialisasi reCAPTCHA (mode invisible)
+    window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+      size: 'invisible'
+    }, auth);
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      // Ambil nomor telepon dari localStorage (dari register.html)
+      const phoneNumber = localStorage.getItem('registerPhone');
+      if (!phoneNumber) {
+        alert("Nomor telepon tidak ditemukan. Silakan masukkan ulang di halaman pendaftaran.");
+        window.location.href = 'register.html';
+      } else {
+        document.getElementById('displayPhone').textContent = phoneNumber;
+      }
+      
+      const sendOTPBtn = document.getElementById('sendOTP');
+      const verifyOTPBtn = document.getElementById('verifyOTP');
+      
+      sendOTPBtn.addEventListener('click', () => {
+        signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier)
+          .then(result => {
+            window.confirmationResultRegister = result;
+            alert("Kode OTP telah dikirim ke nomor " + phoneNumber);
+          })
+          .catch(error => {
+            console.error("Error mengirim OTP:", error);
+            alert("Gagal mengirim OTP: " + error.message);
+          });
+      });
+      
+      verifyOTPBtn.addEventListener('click', () => {
+        const otp = document.getElementById('otp').value;
+        if (!otp) {
+          alert("Masukkan kode OTP");
+          return;
+        }
+        window.confirmationResultRegister.confirm(otp)
+          .then(result => {
+            localStorage.setItem('phoneVerified', 'true');
+            alert("Nomor telepon berhasil diverifikasi.");
+            window.location.href = 'register.html';
+          })
+          .catch(error => {
+            console.error("Verifikasi OTP gagal:", error);
+            alert("OTP salah: " + error.message);
+          });
+      });
+    });
+  </script>
+</head>
+<body>
+  <!-- Video Background & Overlay -->
+  <video autoplay muted loop id="global-bg-video">
+    <source src="assets/bg.mp4" type="video/mp4">
+  </video>
+  <div id="global-bg-overlay"></div>
+
+  <main class="auth-page register-page">
+    <section class="auth-container">
+      <h2>Verifikasi Nomor Telepon</h2>
+      <p>Nomor yang akan diverifikasi: <strong id="displayPhone"></strong></p>
+      <button type="button" id="sendOTP" class="btn auth-btn">Kirim OTP</button>
+      <label for="otp">Masukkan OTP</label>
+      <input type="text" id="otp" placeholder="Kode OTP" required>
+      <button type="button" id="verifyOTP" class="btn auth-btn">Verifikasi OTP</button>
+      <p class="small-text"><a href="register.html">Kembali ke Halaman Pendaftaran</a></p>
+    </section>
+  </main>
+
+  <!-- Kontainer reCAPTCHA -->
+  <div id="recaptcha-container"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

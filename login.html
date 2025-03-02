@@ -2,19 +2,18 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <!-- Agar tampilan responsif di semua perangkat -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login - Renungan Kristen</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase Modular: Import dan Konfigurasi (versi 11.4.0) -->
+  <!-- Firebase & Modul (versi modular) -->
   <script type="module">
-    // Import modul-modul Firebase yang diperlukan
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-
-    // Konfigurasi Firebase – ganti dengan data proyek Anda
+    import { 
+      getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, 
+      GitHubAuthProvider, OAuthProvider, sendEmailVerification 
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    
     const firebaseConfig = {
       apiKey: "AIzaSyDCoYSIF8Bsh3Xrn4BRdzQ5KsMZZJm0FeI",
       authDomain: "renungan-kristen-82183.firebaseapp.com",
@@ -25,81 +24,116 @@
       measurementId: "G-E36N2R2XXH"
     };
 
-    // Inisialisasi Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const auth = getAuth(app);
 
-    // Fungsi login dengan Google (modular)
+    // Fungsi login via Google dengan verifikasi email
     window.loginWithGoogle = function() {
       const provider = new GoogleAuthProvider();
       signInWithPopup(auth, provider)
-        .then((result) => {
+        .then(result => {
           const user = result.user;
-          const currentUser = {
+          if (!user.emailVerified) {
+            sendEmailVerification(user)
+              .then(() => alert("Email verifikasi telah dikirim."))
+              .catch(error => console.error("Error:", error));
+            return;
+          }
+          localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem('currentUser', JSON.stringify({
             name: user.displayName,
             email: user.email,
             profilePic: user.photoURL
-          };
-          // Simpan status login dan data user ke localStorage
-          localStorage.setItem('loggedIn', 'true');
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          }));
           window.location.href = 'home.html';
         })
-        .catch((error) => {
+        .catch(error => {
           console.error(error);
           alert("Login dengan Google gagal: " + error.message);
         });
     };
 
-    // Fungsi login dengan Facebook (modular)
     window.loginWithFacebook = function() {
       const provider = new FacebookAuthProvider();
       signInWithPopup(auth, provider)
-        .then((result) => {
+        .then(result => {
           const user = result.user;
-          const currentUser = {
+          localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem('currentUser', JSON.stringify({
             name: user.displayName,
             email: user.email,
             profilePic: user.photoURL
-          };
-          localStorage.setItem('loggedIn', 'true');
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          }));
           window.location.href = 'home.html';
         })
-        .catch((error) => {
+        .catch(error => {
           console.error(error);
           alert("Login dengan Facebook gagal: " + error.message);
+        });
+    };
+
+    window.loginWithMicrosoft = function() {
+      const provider = new OAuthProvider('microsoft.com');
+      signInWithPopup(auth, provider)
+        .then(result => {
+          const user = result.user;
+          localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem('currentUser', JSON.stringify({
+            name: user.displayName,
+            email: user.email,
+            profilePic: user.photoURL
+          }));
+          window.location.href = 'home.html';
+        })
+        .catch(error => {
+          console.error(error);
+          alert("Login dengan Microsoft gagal: " + error.message);
+        });
+    };
+
+    window.loginWithGitHub = function() {
+      const provider = new GitHubAuthProvider();
+      signInWithPopup(auth, provider)
+        .then(result => {
+          const user = result.user;
+          localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem('currentUser', JSON.stringify({
+            name: user.displayName,
+            email: user.email,
+            profilePic: user.photoURL
+          }));
+          window.location.href = 'home.html';
+        })
+        .catch(error => {
+          console.error(error);
+          alert("Login dengan GitHub gagal: " + error.message);
         });
     };
   </script>
 </head>
 <body>
-  <!-- Global Background Video dan Overlay (elemen lama tidak diubah) -->
+  <!-- Video Background & Overlay -->
   <video autoplay muted loop id="global-bg-video">
     <source src="assets/bg.mp4" type="video/mp4">
   </video>
   <div id="global-bg-overlay"></div>
 
-  <!-- Halaman Login dengan Struktur Lama -->
-  <div class="auth-page login-page">
-    <div class="auth-container">
+  <main class="auth-page login-page">
+    <section class="auth-container">
       <img src="assets/logo.png" alt="Logo" class="auth-logo">
-      <h2>Login</h2>
+      <h2>Masuk ke Akun Anda</h2>
       <form id="loginForm" class="auth-form">
-        <label for="email">Email:</label>
-        <input type="email" id="email" required>
-
-        <label for="password">Password:</label>
+        <label for="email">Alamat Email</label>
+        <input type="email" id="email" placeholder="contoh@mail.com" required>
+        <label for="password">Kata Sandi</label>
         <div class="password-field">
-          <input type="password" id="password" required>
-          <!-- Fungsi toggle password diambil dari script.js -->
-          <img src="assets/eye-open.png" alt="Toggle Password" class="toggle-password" onclick="togglePassword()">
+          <input type="password" id="password" placeholder="********" required>
+          <img src="assets/eye-open.png" alt="Toggle Password" class="toggle-password">
         </div>
         <button type="submit" class="btn auth-btn">Login</button>
       </form>
-
-      <!-- Tombol Login Sosial dengan Ikon dari URL Eksternal -->
+      
       <div class="social-login">
         <button class="btn google" onclick="loginWithGoogle()">
           <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google" class="social-icon">
@@ -109,13 +143,22 @@
           <img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook" class="social-icon">
           Login dengan Facebook
         </button>
+        <button class="btn microsoft" onclick="loginWithMicrosoft()">
+          <img src="https://cdn-icons-png.flaticon.com/512/732/732221.png" alt="Microsoft" class="social-icon">
+          Login dengan Microsoft
+        </button>
+        <button class="btn github" onclick="loginWithGitHub()">
+          <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="GitHub" class="social-icon">
+          Login dengan GitHub
+        </button>
       </div>
-      <a href="forgot.html" class="forgot-link">Lupa Password?</a>
-      <p>Belum punya akun? <a href="register.html">Daftar Sekarang</a></p>
-    </div>
-  </div>
+      
+      <p class="small-text">Ingin login dengan nomor telepon? <a href="phoneOTPLogin.html">Klik di sini</a></p>
+      <p class="small-text"><a href="forgot.html" class="forgot-link">Lupa Kata Sandi?</a></p>
+      <p class="small-text">Belum punya akun? <a href="register.html">Daftar Sekarang</a></p>
+    </section>
+  </main>
 
-  <!-- Panggil file JavaScript lama untuk fungsi lain (seperti togglePassword, form handling, dsb.) -->
   <script src="script.js"></script>
 </body>
 </html>

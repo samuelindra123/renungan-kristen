@@ -2,52 +2,139 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Daftar - Renungan Kristen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daftar Akun - Renungan Kristen</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Firebase & Modul -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
+    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyDCoYSIF8Bsh3Xrn4BRdzQ5KsMZZJm0FeI",
+      authDomain: "renungan-kristen-82183.firebaseapp.com",
+      projectId: "renungan-kristen-82183",
+      storageBucket: "renungan-kristen-82183.firebasestorage.app",
+      messagingSenderId: "939599948432",
+      appId: "1:939599948432:web:558538edd470bd4c798615",
+      measurementId: "G-E36N2R2XXH"
+    };
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      const registerForm = document.getElementById('registerForm');
+      registerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Pastikan nomor telepon sudah diverifikasi (flag tersimpan di localStorage)
+        if(localStorage.getItem('phoneVerified') !== 'true'){
+          alert("Nomor telepon belum diverifikasi. Silakan lakukan verifikasi melalui tombol di bawah.");
+          return;
+        }
+        const fullname   = document.getElementById('fullname').value;
+        const email      = document.getElementById('email').value;
+        const password   = document.getElementById('password').value;
+        const birthplace = document.getElementById('birthplace').value;
+        const birthdate  = document.getElementById('birthdate').value;
+        const phone      = document.getElementById('phone').value;
+        const captcha    = document.getElementById('verification').value;
+        const randomNum  = document.getElementById('randomNumber').textContent;
+        
+        if(captcha !== randomNum) {
+          alert("Verifikasi angka salah!");
+          return;
+        }
+        
+        createUserWithEmailAndPassword(auth, email, password)
+          .then(userCredential => {
+            const user = userCredential.user;
+            sendEmailVerification(user)
+              .then(() => {
+                window.location.href = 'emailVerificationSent.html';
+              })
+              .catch(error => console.error("Gagal mengirim verifikasi email:", error));
+            
+            set(ref(db, 'users/' + user.uid), {
+              fullname: fullname,
+              email: email,
+              birthplace: birthplace,
+              birthdate: birthdate,
+              phone: phone,
+              createdAt: new Date().toISOString()
+            })
+            .then(() => console.log("Data pengguna tersimpan"))
+            .catch(error => console.error("Gagal menyimpan data:", error));
+          })
+          .catch(error => {
+            console.error("Registrasi gagal:", error);
+            alert("Registrasi gagal: " + error.message);
+          });
+      });
+      
+      // Simpan nomor telepon dari input ke localStorage agar digunakan untuk verifikasi OTP di halaman lain
+      document.getElementById('phone').addEventListener('change', (e) => {
+        localStorage.setItem('registerPhone', e.target.value);
+        localStorage.removeItem('phoneVerified');
+      });
+      
+      // Set captcha sederhana
+      const randomNum = Math.floor(Math.random() * 9000) + 1000;
+      document.getElementById('randomNumber').textContent = randomNum;
+      localStorage.setItem('verificationNumber', randomNum);
+    });
+  </script>
 </head>
 <body>
-  <!-- VIDEO BACKGROUND GLOBAL -->
+  <!-- Video Background & Overlay -->
   <video autoplay muted loop id="global-bg-video">
     <source src="assets/bg.mp4" type="video/mp4">
   </video>
   <div id="global-bg-overlay"></div>
 
-  <div class="auth-page register-page">
-    <div class="auth-overlay"></div>
-    <div class="auth-container">
+  <main class="auth-page register-page">
+    <section class="auth-container">
       <img src="assets/logo.png" alt="Logo" class="auth-logo">
-      <h2>Daftar Akun</h2>
+      <h2>Buat Akun Baru</h2>
       <form id="registerForm" class="auth-form">
-        <label for="fullname">Nama Lengkap:</label>
-        <input type="text" id="fullname" required>
+        <label for="fullname">Nama Lengkap</label>
+        <input type="text" id="fullname" placeholder="Nama lengkap Anda" required>
         
-        <label for="email">Email:</label>
-        <input type="email" id="email" required>
+        <label for="email">Alamat Email</label>
+        <input type="email" id="email" placeholder="contoh@mail.com" required>
         
-        <label for="password">Password:</label>
+        <label for="password">Kata Sandi</label>
         <div class="password-field">
-          <input type="password" id="password" required>
-          <img src="assets/eye-open.png" alt="Toggle Password" class="toggle-password" onclick="togglePassword()">
+          <input type="password" id="password" placeholder="********" required>
+          <img src="assets/eye-open.png" alt="Toggle Password" class="toggle-password">
         </div>
         
-        <label for="birthplace">Tempat Lahir:</label>
-        <input type="text" id="birthplace" required>
+        <label for="birthplace">Tempat Lahir</label>
+        <input type="text" id="birthplace" placeholder="Kota, Provinsi" required>
         
-        <label for="birthdate">Tanggal Lahir:</label>
+        <label for="birthdate">Tanggal Lahir</label>
         <input type="date" id="birthdate" required>
         
-        <label for="verification">Verifikasi Angka:</label>
+        <label for="phone">Nomor Telepon</label>
+        <input type="text" id="phone" placeholder="+62..." required>
+        <!-- Tombol untuk verifikasi nomor telepon -->
+        <button type="button" onclick="window.location.href='phoneOTPRegister.html'" class="btn auth-btn">Verifikasi Nomor Telepon</button>
+        
+        <!-- Captcha sederhana -->
+        <label for="verification">Masukkan Angka Verifikasi</label>
         <div class="verification">
           <span id="randomNumber"></span>
-          <input type="text" id="verification" required>
+          <input type="text" id="verification" placeholder="Masukkan angka di atas" required>
         </div>
         
         <button type="submit" class="btn auth-btn">Daftar</button>
       </form>
-      <p>Sudah punya akun? <a href="login.html">Login</a></p>
-    </div>
-  </div>
+      <p class="small-text">Sudah punya akun? <a href="login.html">Login</a></p>
+    </section>
+  </main>
   
   <script src="script.js"></script>
 </body>

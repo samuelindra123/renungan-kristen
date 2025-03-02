@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login dengan Nomor Telepon - Renungan Kristen</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase & Modul -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    
+    // Konfigurasi Firebase (sesuaikan dengan proyek Anda)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MSG_SENDER_ID",
+      appId: "YOUR_APP_ID",
+      measurementId: "YOUR_MEASURE_ID"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Inisialisasi reCAPTCHA (mode invisible)
+    window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+      size: 'invisible'
+    }, auth);
+
+    // Fungsi untuk mengirim OTP
+    function sendOTP() {
+      const phoneNumber = document.getElementById('phoneLogin').value.trim();
+      if (!phoneNumber) {
+        alert("Masukkan nomor telepon Anda");
+        return;
+      }
+      signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier)
+        .then((confirmationResult) => {
+          // Simpan confirmationResult di sessionStorage (atau localStorage) agar bisa digunakan di halaman verifikasi
+          sessionStorage.setItem('confirmationResult', JSON.stringify(confirmationResult));
+          // Simpan nomor telepon agar bisa ditampilkan/diterima di halaman verifikasi
+          sessionStorage.setItem('phoneNumber', phoneNumber);
+          alert("Kode OTP telah dikirim ke nomor Anda.");
+
+          // Arahkan ke halaman verifikasi OTP
+          window.location.href = 'phoneOTPVerify.html';
+        })
+        .catch(error => {
+          console.error("Error mengirim OTP:", error);
+          alert("Gagal mengirim OTP: " + error.message);
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const sendOTPBtn = document.getElementById('sendOTPLogin');
+      sendOTPBtn.addEventListener('click', sendOTP);
+    });
+  </script>
+</head>
+<body>
+  <!-- Video Background & Overlay -->
+  <video autoplay muted loop id="global-bg-video">
+    <source src="assets/bg.mp4" type="video/mp4">
+  </video>
+  <div id="global-bg-overlay"></div>
+
+  <!-- Halaman Login dengan Nomor Telepon -->
+  <main class="auth-page login-page">
+    <section class="auth-container">
+      <h2>Login dengan Nomor Telepon</h2>
+      
+      <!-- Form input nomor telepon -->
+      <div class="auth-form" style="text-align:left;">
+        <label for="phoneLogin">Nomor Telepon</label>
+        <input type="text" id="phoneLogin" placeholder="+62..." required>
+        
+        <button type="button" id="sendOTPLogin" class="btn auth-btn" style="margin-top:20px;">
+          Kirim OTP
+        </button>
+      </div>
+      
+      <p class="small-text"><a href="login.html">Kembali ke Halaman Login</a></p>
+    </section>
+  </main>
+
+  <!-- Kontainer reCAPTCHA -->
+  <div id="recaptcha-container"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
