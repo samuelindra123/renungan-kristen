@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login - Renungan Kristen</title>
   <link rel="stylesheet" href="style.css">
+
   <!-- Firebase & Modul (versi modular) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
@@ -13,8 +14,8 @@
       getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, 
       GitHubAuthProvider, OAuthProvider, sendEmailVerification 
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-    
-    // Pastikan firebaseConfig di bawah ini sesuai dengan data proyek Firebase Anda
+
+    // -- Pastikan konfigurasi berikut sesuai dengan data proyek Firebase Anda --
     const firebaseConfig = {
       apiKey: "AIzaSyDCoYSIF8Bsh3Xrn4BRdzQ5KsMZZJm0FeI",
       authDomain: "renungan-kristen-82183.firebaseapp.com",
@@ -25,33 +26,35 @@
       measurementId: "G-E36N2R2XXH"
     };
 
+    // Inisialisasi Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const auth = getAuth(app);
 
-    // Fungsi login via Google dengan verifikasi email
-    window.loginWithGoogle = () => {
+    // --- Agar fungsi bisa diakses di tombol HTML, definisikan di window ---
+    window.loginWithGoogle = function() {
       const provider = new GoogleAuthProvider();
       signInWithPopup(auth, provider)
         .then(result => {
           const user = result.user;
           console.log("User Google:", user);
-          // Cek apakah email sudah diverifikasi
+
+          // Cek apakah email sudah diverifikasi (opsional, untuk Google biasanya sudah)
           if (!user.emailVerified) {
             sendEmailVerification(user)
-              .then(() => {
-                alert("Email verifikasi telah dikirim. Silakan cek email Anda.");
-              })
+              .then(() => alert("Email verifikasi telah dikirim. Silakan cek email Anda."))
               .catch(error => console.error("Error verifikasi email:", error));
-            return;
+            return; // Berhenti di sini sampai email diverifikasi
           }
-          // Simpan data pengguna dan status login
+          
+          // Simpan data pengguna
           localStorage.setItem('loggedIn', 'true');
           localStorage.setItem('currentUser', JSON.stringify({
             name: user.displayName,
             email: user.email,
             profilePic: user.photoURL
           }));
+          // Arahkan ke halaman home
           window.location.href = 'home.html';
         })
         .catch(error => {
@@ -60,13 +63,13 @@
         });
     };
 
-    // Fungsi login via Facebook
-    window.loginWithFacebook = () => {
+    window.loginWithFacebook = function() {
       const provider = new FacebookAuthProvider();
       signInWithPopup(auth, provider)
         .then(result => {
           const user = result.user;
           console.log("User Facebook:", user);
+
           localStorage.setItem('loggedIn', 'true');
           localStorage.setItem('currentUser', JSON.stringify({
             name: user.displayName,
@@ -81,13 +84,13 @@
         });
     };
 
-    // Fungsi login via Microsoft
-    window.loginWithMicrosoft = () => {
+    window.loginWithMicrosoft = function() {
       const provider = new OAuthProvider('microsoft.com');
       signInWithPopup(auth, provider)
         .then(result => {
           const user = result.user;
           console.log("User Microsoft:", user);
+
           localStorage.setItem('loggedIn', 'true');
           localStorage.setItem('currentUser', JSON.stringify({
             name: user.displayName,
@@ -102,13 +105,13 @@
         });
     };
 
-    // Fungsi login via GitHub
-    window.loginWithGitHub = () => {
+    window.loginWithGitHub = function() {
       const provider = new GitHubAuthProvider();
       signInWithPopup(auth, provider)
         .then(result => {
           const user = result.user;
           console.log("User GitHub:", user);
+
           localStorage.setItem('loggedIn', 'true');
           localStorage.setItem('currentUser', JSON.stringify({
             name: user.displayName,
@@ -135,17 +138,22 @@
     <section class="auth-container">
       <img src="assets/logo.png" alt="Logo" class="auth-logo">
       <h2>Masuk ke Akun Anda</h2>
+
+      <!-- Form login email/password (non-Firebase localStorage simulasi atau form handle) -->
       <form id="loginForm" class="auth-form">
         <label for="email">Alamat Email</label>
         <input type="email" id="email" placeholder="contoh@mail.com" required>
+
         <label for="password">Kata Sandi</label>
         <div class="password-field">
           <input type="password" id="password" placeholder="********" required>
           <img src="assets/eye-open.png" alt="Toggle Password" class="toggle-password">
         </div>
+
         <button type="submit" class="btn auth-btn">Login</button>
       </form>
       
+      <!-- Tombol login sosial -->
       <div class="social-login">
         <button class="btn google" onclick="loginWithGoogle()">
           <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google" class="social-icon">
@@ -171,6 +179,8 @@
     </section>
   </main>
 
+  <!-- Pastikan file script.js tidak menimpa fungsi login sosial. 
+       script.js boleh tetap, tapi sebaiknya JANGAN mendefinisikan loginWithGoogle() dsb. lagi. -->
   <script src="script.js"></script>
 </body>
 </html>
