@@ -5,15 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login - Renungan Kristen</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Firebase & Modul (versi modular) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
-    import { 
-      getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, 
-      GitHubAuthProvider, OAuthProvider, sendEmailVerification 
-    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-    
+
+  <!-- Firebase CDN (Compat Version) -->
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-analytics-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-auth-compat.js"></script>
+
+  <script>
+    // Ganti firebaseConfig di bawah ini dengan data proyek Firebase Anda
     const firebaseConfig = {
       apiKey: "AIzaSyDCoYSIF8Bsh3Xrn4BRdzQ5KsMZZJm0FeI",
       authDomain: "renungan-kristen-82183.firebaseapp.com",
@@ -24,20 +23,24 @@
       measurementId: "G-E36N2R2XXH"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth(app);
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    const auth = firebase.auth();
 
-    // Fungsi login via Google dengan verifikasi email
-    window.loginWithGoogle = function() {
-      const provider = new GoogleAuthProvider();
-      signInWithPopup(auth, provider)
+    // Fungsi login dengan Google
+    function loginWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
         .then(result => {
           const user = result.user;
+          console.log("User Google:", user);
+
+          // Opsional: cek apakah email sudah diverifikasi (Google biasanya sudah)
           if (!user.emailVerified) {
-            sendEmailVerification(user)
-              .then(() => alert("Email verifikasi telah dikirim."))
-              .catch(error => console.error("Error:", error));
+            user.sendEmailVerification()
+              .then(() => alert("Email verifikasi telah dikirim. Silakan cek email Anda."))
+              .catch(err => console.error("Error verifikasi email:", err));
             return;
           }
           localStorage.setItem('loggedIn', 'true');
@@ -49,16 +52,18 @@
           window.location.href = 'home.html';
         })
         .catch(error => {
-          console.error(error);
+          console.error("Login dengan Google error:", error);
           alert("Login dengan Google gagal: " + error.message);
         });
-    };
+    }
 
-    window.loginWithFacebook = function() {
-      const provider = new FacebookAuthProvider();
-      signInWithPopup(auth, provider)
+    // Fungsi login dengan Facebook
+    function loginWithFacebook() {
+      const provider = new firebase.auth.FacebookAuthProvider();
+      auth.signInWithPopup(provider)
         .then(result => {
           const user = result.user;
+          console.log("User Facebook:", user);
           localStorage.setItem('loggedIn', 'true');
           localStorage.setItem('currentUser', JSON.stringify({
             name: user.displayName,
@@ -68,16 +73,18 @@
           window.location.href = 'home.html';
         })
         .catch(error => {
-          console.error(error);
+          console.error("Login dengan Facebook error:", error);
           alert("Login dengan Facebook gagal: " + error.message);
         });
-    };
+    }
 
-    window.loginWithMicrosoft = function() {
-      const provider = new OAuthProvider('microsoft.com');
-      signInWithPopup(auth, provider)
+    // Fungsi login dengan Microsoft
+    function loginWithMicrosoft() {
+      const provider = new firebase.auth.OAuthProvider('microsoft.com');
+      auth.signInWithPopup(provider)
         .then(result => {
           const user = result.user;
+          console.log("User Microsoft:", user);
           localStorage.setItem('loggedIn', 'true');
           localStorage.setItem('currentUser', JSON.stringify({
             name: user.displayName,
@@ -87,16 +94,18 @@
           window.location.href = 'home.html';
         })
         .catch(error => {
-          console.error(error);
+          console.error("Login dengan Microsoft error:", error);
           alert("Login dengan Microsoft gagal: " + error.message);
         });
-    };
+    }
 
-    window.loginWithGitHub = function() {
-      const provider = new GitHubAuthProvider();
-      signInWithPopup(auth, provider)
+    // Fungsi login dengan GitHub
+    function loginWithGitHub() {
+      const provider = new firebase.auth.GithubAuthProvider();
+      auth.signInWithPopup(provider)
         .then(result => {
           const user = result.user;
+          console.log("User GitHub:", user);
           localStorage.setItem('loggedIn', 'true');
           localStorage.setItem('currentUser', JSON.stringify({
             name: user.displayName,
@@ -106,14 +115,14 @@
           window.location.href = 'home.html';
         })
         .catch(error => {
-          console.error(error);
+          console.error("Login dengan GitHub error:", error);
           alert("Login dengan GitHub gagal: " + error.message);
         });
-    };
+    }
   </script>
 </head>
 <body>
-  <!-- Video Background & Overlay -->
+  <!-- Video Background & Overlay (tetap sama) -->
   <video autoplay muted loop id="global-bg-video">
     <source src="assets/bg.mp4" type="video/mp4">
   </video>
@@ -123,17 +132,22 @@
     <section class="auth-container">
       <img src="assets/logo.png" alt="Logo" class="auth-logo">
       <h2>Masuk ke Akun Anda</h2>
+      
+      <!-- Form login email/password (jika diperlukan) -->
       <form id="loginForm" class="auth-form">
         <label for="email">Alamat Email</label>
         <input type="email" id="email" placeholder="contoh@mail.com" required>
+
         <label for="password">Kata Sandi</label>
         <div class="password-field">
           <input type="password" id="password" placeholder="********" required>
           <img src="assets/eye-open.png" alt="Toggle Password" class="toggle-password">
         </div>
+
         <button type="submit" class="btn auth-btn">Login</button>
       </form>
       
+      <!-- Tombol login sosial -->
       <div class="social-login">
         <button class="btn google" onclick="loginWithGoogle()">
           <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google" class="social-icon">
