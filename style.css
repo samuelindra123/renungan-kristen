@@ -6,7 +6,7 @@
   padding: 0; 
   box-sizing: border-box;
 }
-body {
+body { /* Sesuaikan logo dengan style CSS tanpa menghilangkan elemen yang lama */
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: #f5f5f5;
   color: #333;
@@ -227,7 +227,9 @@ a {
 }
 .social-icon {
   width: 20px;
+  height: 20px;
   margin-right: 8px;
+  vertical-align: middle;
 }
 .small-text {
   font-size: 0.9rem;

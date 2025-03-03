@@ -3,19 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login - Renungan Kristen</title>
+  <title>Daftar Akun - Renungan Kristen</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase & Modul (versi modular) -->
+  <!-- Firebase & Modul -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
-    import { 
-      getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, 
-      GitHubAuthProvider, OAuthProvider, sendEmailVerification 
-    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-
-    // -- Pastikan konfigurasi berikut sesuai dengan data proyek Firebase Anda --
+    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+    
     const firebaseConfig = {
       apiKey: "AIzaSyDCoYSIF8Bsh3Xrn4BRdzQ5KsMZZJm0FeI",
       authDomain: "renungan-kristen-82183.firebaseapp.com",
@@ -25,106 +21,71 @@
       appId: "1:939599948432:web:558538edd470bd4c798615",
       measurementId: "G-E36N2R2XXH"
     };
-
-    // Inisialisasi Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const auth = getAuth(app);
-
-    // --- Agar fungsi bisa diakses di tombol HTML, definisikan di window ---
-    window.loginWithGoogle = function() {
-      const provider = new GoogleAuthProvider();
-      signInWithPopup(auth, provider)
-        .then(result => {
-          const user = result.user;
-          console.log("User Google:", user);
-
-          // Cek apakah email sudah diverifikasi (opsional, untuk Google biasanya sudah)
-          if (!user.emailVerified) {
+    const db = getDatabase(app);
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      const registerForm = document.getElementById('registerForm');
+      registerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Pastikan nomor telepon sudah diverifikasi (flag tersimpan di localStorage)
+        if(localStorage.getItem('phoneVerified') !== 'true'){
+          alert("Nomor telepon belum diverifikasi. Silakan lakukan verifikasi melalui tombol di bawah.");
+          return;
+        }
+        const fullname   = document.getElementById('fullname').value;
+        const email      = document.getElementById('email').value;
+        const password   = document.getElementById('password').value;
+        const birthplace = document.getElementById('birthplace').value;
+        const birthdate  = document.getElementById('birthdate').value;
+        const phone      = document.getElementById('phone').value;
+        const captcha    = document.getElementById('verification').value;
+        const randomNum  = document.getElementById('randomNumber').textContent;
+        
+        if(captcha !== randomNum) {
+          alert("Verifikasi angka salah!");
+          return;
+        }
+        
+        createUserWithEmailAndPassword(auth, email, password)
+          .then(userCredential => {
+            const user = userCredential.user;
             sendEmailVerification(user)
-              .then(() => alert("Email verifikasi telah dikirim. Silakan cek email Anda."))
-              .catch(error => console.error("Error verifikasi email:", error));
-            return; // Berhenti di sini sampai email diverifikasi
-          }
-          
-          // Simpan data pengguna
-          localStorage.setItem('loggedIn', 'true');
-          localStorage.setItem('currentUser', JSON.stringify({
-            name: user.displayName,
-            email: user.email,
-            profilePic: user.photoURL
-          }));
-          // Arahkan ke halaman home
-          window.location.href = 'home.html';
-        })
-        .catch(error => {
-          console.error("Login dengan Google error:", error);
-          alert("Login dengan Google gagal: " + error.message);
-        });
-    };
-
-    window.loginWithFacebook = function() {
-      const provider = new FacebookAuthProvider();
-      signInWithPopup(auth, provider)
-        .then(result => {
-          const user = result.user;
-          console.log("User Facebook:", user);
-
-          localStorage.setItem('loggedIn', 'true');
-          localStorage.setItem('currentUser', JSON.stringify({
-            name: user.displayName,
-            email: user.email,
-            profilePic: user.photoURL
-          }));
-          window.location.href = 'home.html';
-        })
-        .catch(error => {
-          console.error("Login dengan Facebook error:", error);
-          alert("Login dengan Facebook gagal: " + error.message);
-        });
-    };
-
-    window.loginWithMicrosoft = function() {
-      const provider = new OAuthProvider('microsoft.com');
-      signInWithPopup(auth, provider)
-        .then(result => {
-          const user = result.user;
-          console.log("User Microsoft:", user);
-
-          localStorage.setItem('loggedIn', 'true');
-          localStorage.setItem('currentUser', JSON.stringify({
-            name: user.displayName,
-            email: user.email,
-            profilePic: user.photoURL
-          }));
-          window.location.href = 'home.html';
-        })
-        .catch(error => {
-          console.error("Login dengan Microsoft error:", error);
-          alert("Login dengan Microsoft gagal: " + error.message);
-        });
-    };
-
-    window.loginWithGitHub = function() {
-      const provider = new GitHubAuthProvider();
-      signInWithPopup(auth, provider)
-        .then(result => {
-          const user = result.user;
-          console.log("User GitHub:", user);
-
-          localStorage.setItem('loggedIn', 'true');
-          localStorage.setItem('currentUser', JSON.stringify({
-            name: user.displayName,
-            email: user.email,
-            profilePic: user.photoURL
-          }));
-          window.location.href = 'home.html';
-        })
-        .catch(error => {
-          console.error("Login dengan GitHub error:", error);
-          alert("Login dengan GitHub gagal: " + error.message);
-        });
-    };
+              .then(() => {
+                window.location.href = 'emailVerificationSent.html';
+              })
+              .catch(error => console.error("Gagal mengirim verifikasi email:", error));
+            
+            set(ref(db, 'users/' + user.uid), {
+              fullname: fullname,
+              email: email,
+              birthplace: birthplace,
+              birthdate: birthdate,
+              phone: phone,
+              createdAt: new Date().toISOString()
+            })
+            .then(() => console.log("Data pengguna tersimpan"))
+            .catch(error => console.error("Gagal menyimpan data:", error));
+          })
+          .catch(error => {
+            console.error("Registrasi gagal:", error);
+            alert("Registrasi gagal: " + error.message);
+          });
+      });
+      
+      // Simpan nomor telepon dari input ke localStorage agar digunakan untuk verifikasi OTP di halaman lain
+      document.getElementById('phone').addEventListener('change', (e) => {
+        localStorage.setItem('registerPhone', e.target.value);
+        localStorage.removeItem('phoneVerified');
+      });
+      
+      // Set captcha sederhana
+      const randomNum = Math.floor(Math.random() * 9000) + 1000;
+      document.getElementById('randomNumber').textContent = randomNum;
+      localStorage.setItem('verificationNumber', randomNum);
+    });
   </script>
 </head>
 <body>
@@ -134,53 +95,47 @@
   </video>
   <div id="global-bg-overlay"></div>
 
-  <main class="auth-page login-page">
+  <main class="auth-page register-page">
     <section class="auth-container">
       <img src="assets/logo.png" alt="Logo" class="auth-logo">
-      <h2>Masuk ke Akun Anda</h2>
-
-      <!-- Form login email/password (non-Firebase localStorage simulasi atau form handle) -->
-      <form id="loginForm" class="auth-form">
+      <h2>Buat Akun Baru</h2>
+      <form id="registerForm" class="auth-form">
+        <label for="fullname">Nama Lengkap</label>
+        <input type="text" id="fullname" placeholder="Nama lengkap Anda" required>
+        
         <label for="email">Alamat Email</label>
         <input type="email" id="email" placeholder="contoh@mail.com" required>
-
+        
         <label for="password">Kata Sandi</label>
         <div class="password-field">
           <input type="password" id="password" placeholder="********" required>
           <img src="assets/eye-open.png" alt="Toggle Password" class="toggle-password">
         </div>
-
-        <button type="submit" class="btn auth-btn">Login</button>
+        
+        <label for="birthplace">Tempat Lahir</label>
+        <input type="text" id="birthplace" placeholder="Kota, Provinsi" required>
+        
+        <label for="birthdate">Tanggal Lahir</label>
+        <input type="date" id="birthdate" required>
+        
+        <label for="phone">Nomor Telepon</label>
+        <input type="text" id="phone" placeholder="+62..." required>
+        <!-- Tombol untuk verifikasi nomor telepon -->
+        <button type="button" onclick="window.location.href='phoneOTPRegister.html'" class="btn auth-btn">Verifikasi Nomor Telepon</button>
+        
+        <!-- Captcha sederhana -->
+        <label for="verification">Masukkan Angka Verifikasi</label>
+        <div class="verification">
+          <span id="randomNumber"></span>
+          <input type="text" id="verification" placeholder="Masukkan angka di atas" required>
+        </div>
+        
+        <button type="submit" class="btn auth-btn">Daftar</button>
       </form>
-      
-      <!-- Tombol login sosial -->
-      <div class="social-login">
-        <button class="btn google" onclick="loginWithGoogle()">
-          <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google" class="social-icon">
-          Login dengan Google
-        </button>
-        <button class="btn facebook" onclick="loginWithFacebook()">
-          <img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook" class="social-icon">
-          Login dengan Facebook
-        </button>
-        <button class="btn microsoft" onclick="loginWithMicrosoft()">
-          <img src="https://cdn-icons-png.flaticon.com/512/732/732221.png" alt="Microsoft" class="social-icon">
-          Login dengan Microsoft
-        </button>
-        <button class="btn github" onclick="loginWithGitHub()">
-          <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="GitHub" class="social-icon">
-          Login dengan GitHub
-        </button>
-      </div>
-      
-      <p class="small-text">Ingin login dengan nomor telepon? <a href="phoneOTPLogin.html">Klik di sini</a></p>
-      <p class="small-text"><a href="forgot.html" class="forgot-link">Lupa Kata Sandi?</a></p>
-      <p class="small-text">Belum punya akun? <a href="register.html">Daftar Sekarang</a></p>
+      <p class="small-text">Sudah punya akun? <a href="login.html">Login</a></p>
     </section>
   </main>
-
-  <!-- Pastikan file script.js tidak menimpa fungsi login sosial. 
-       script.js boleh tetap, tapi sebaiknya JANGAN mendefinisikan loginWithGoogle() dsb. lagi. -->
+  
   <script src="script.js"></script>
 </body>
 </html>

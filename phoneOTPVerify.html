@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verifikasi OTP - Renungan Kristen</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase & Modul -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    
+    // Konfigurasi Firebase (sesuaikan dengan proyek Anda)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MSG_SENDER_ID",
+      appId: "YOUR_APP_ID",
+      measurementId: "YOUR_MEASURE_ID"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    function verifyOTP() {
+      const otp = document.getElementById('otpLogin').value.trim();
+      if (!otp) {
+        alert("Masukkan kode OTP");
+        return;
+      }
+      // Ambil confirmationResult dari sessionStorage
+      const confirmationResultString = sessionStorage.getItem('confirmationResult');
+      if (!confirmationResultString) {
+        alert("OTP tidak ditemukan! Silakan ulangi proses.");
+        window.location.href = 'phoneOTPLogin.html';
+        return;
+      }
+      const confirmationResult = JSON.parse(confirmationResultString);
+
+      // Verifikasi OTP
+      confirmationResult.confirm(otp)
+        .then((result) => {
+          const user = result.user;
+          // Simpan status login ke localStorage (atau sessionStorage)
+          localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem('currentUser', JSON.stringify({
+            phone: user.phoneNumber
+          }));
+          alert("Nomor telepon berhasil diverifikasi & login sukses.");
+          window.location.href = 'home.html';
+        })
+        .catch(error => {
+          console.error("OTP salah:", error);
+          alert("Verifikasi OTP gagal: " + error.message);
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Tampilkan nomor telepon di label (jika ingin user tahu nomor mana yang diverifikasi)
+      const phoneNumber = sessionStorage.getItem('phoneNumber');
+      if (phoneNumber) {
+        document.getElementById('displayPhone').textContent = phoneNumber;
+      }
+
+      const verifyOTPBtn = document.getElementById('verifyOTPLogin');
+      verifyOTPBtn.addEventListener('click', verifyOTP);
+    });
+  </script>
+</head>
+<body>
+  <!-- Video Background & Overlay -->
+  <video autoplay muted loop id="global-bg-video">
+    <source src="assets/bg.mp4" type="video/mp4">
+  </video>
+  <div id="global-bg-overlay"></div>
+
+  <!-- Halaman Verifikasi OTP -->
+  <main class="auth-page login-page">
+    <section class="auth-container">
+      <h2>Verifikasi OTP</h2>
+      <p class="small-text" style="margin-bottom:20px;">
+        Nomor yang diverifikasi: <strong id="displayPhone"></strong>
+      </p>
+      
+      <!-- Form input kode OTP -->
+      <div class="auth-form" style="text-align:left;">
+        <label for="otpLogin">Kode OTP</label>
+        <input type="text" id="otpLogin" placeholder="Masukkan 6 digit kode OTP" required>
+        
+        <button type="button" id="verifyOTPLogin" class="btn auth-btn" style="margin-top:20px;">
+          Verifikasi OTP
+        </button>
+      </div>
+
+      <p class="small-text"><a href="phoneOTPLogin.html">Kembali</a></p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -6,15 +6,15 @@
   <title>Login - Renungan Kristen</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- Firebase CDN (Compat Version) -->
+  <!-- Firebase CDN (Compat) agar `firebase` terdefinisi di global -->
   <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-analytics-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-auth-compat.js"></script>
 
   <script>
-    // Ganti firebaseConfig di bawah ini dengan data proyek Firebase Anda
+    // Konfigurasi Firebase – ganti dengan data proyek Anda
     const firebaseConfig = {
-      apiKey: "AIzaSyDCoYSIF8Bsh3Xrn4BRdzQ5KsMZZJm0FeI",
+      apiKey: "AIzaSyDCoYSIF8B...",
       authDomain: "renungan-kristen-82183.firebaseapp.com",
       projectId: "renungan-kristen-82183",
       storageBucket: "renungan-kristen-82183.firebasestorage.app",
@@ -35,8 +35,7 @@
         .then(result => {
           const user = result.user;
           console.log("User Google:", user);
-
-          // Opsional: cek apakah email sudah diverifikasi (Google biasanya sudah)
+          // Cek email verifikasi (opsional)
           if (!user.emailVerified) {
             user.sendEmailVerification()
               .then(() => alert("Email verifikasi telah dikirim. Silakan cek email Anda."))
@@ -78,13 +77,13 @@
         });
     }
 
-    // Fungsi login dengan Microsoft
-    function loginWithMicrosoft() {
-      const provider = new firebase.auth.OAuthProvider('microsoft.com');
+    // Fungsi login dengan Twitter (pengganti Microsoft)
+    function loginWithTwitter() {
+      const provider = new firebase.auth.TwitterAuthProvider();
       auth.signInWithPopup(provider)
         .then(result => {
           const user = result.user;
-          console.log("User Microsoft:", user);
+          console.log("User Twitter:", user);
           localStorage.setItem('loggedIn', 'true');
           localStorage.setItem('currentUser', JSON.stringify({
             name: user.displayName,
@@ -94,8 +93,8 @@
           window.location.href = 'home.html';
         })
         .catch(error => {
-          console.error("Login dengan Microsoft error:", error);
-          alert("Login dengan Microsoft gagal: " + error.message);
+          console.error("Login dengan Twitter error:", error);
+          alert("Login dengan Twitter gagal: " + error.message);
         });
     }
 
@@ -122,7 +121,7 @@
   </script>
 </head>
 <body>
-  <!-- Video Background & Overlay (tetap sama) -->
+  <!-- Video Background & Overlay -->
   <video autoplay muted loop id="global-bg-video">
     <source src="assets/bg.mp4" type="video/mp4">
   </video>
@@ -133,7 +132,6 @@
       <img src="assets/logo.png" alt="Logo" class="auth-logo">
       <h2>Masuk ke Akun Anda</h2>
       
-      <!-- Form login email/password (jika diperlukan) -->
       <form id="loginForm" class="auth-form">
         <label for="email">Alamat Email</label>
         <input type="email" id="email" placeholder="contoh@mail.com" required>
@@ -157,9 +155,16 @@
           <img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook" class="social-icon">
           Login dengan Facebook
         </button>
-        <button class="btn microsoft" onclick="loginWithMicrosoft()">
-          <img src="https://cdn-icons-png.flaticon.com/512/732/732221.png" alt="Microsoft" class="social-icon">
-          Login dengan Microsoft
+        <button class="btn twitter" onclick="loginWithTwitter()">
+          <!-- Ganti logo Twitter dengan logo X dari Icons8 -->
+          <img 
+            width="50" 
+            height="50" 
+            src="https://img.icons8.com/ios-filled/50/twitterx--v2.png" 
+            alt="twitterx--v2" 
+            class="social-icon"
+          >
+          Login dengan Twitter
         </button>
         <button class="btn github" onclick="loginWithGitHub()">
           <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="GitHub" class="social-icon">
@@ -173,6 +178,7 @@
     </section>
   </main>
 
+  <!-- Script untuk interaksi UI, misal toggle password -->
   <script src="script.js"></script>
 </body>
 </html>
